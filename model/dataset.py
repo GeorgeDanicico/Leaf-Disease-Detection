@@ -35,8 +35,7 @@ class LeafDiseaseClassifierDataset(data.Dataset):
         return loaded_image, image_label
 
 
-def load_data():
-    root_dir = '/Volumes/PortableSSD/dataset/plants/plants/train'
+def load_data(root_dir):
     images = []
     plant_labels = []
     disease_labels = []

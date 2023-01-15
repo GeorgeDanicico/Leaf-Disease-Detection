@@ -6,6 +6,7 @@ import torchvision.transforms as transforms
 
 from dataset import load_data
 
+global model
 device = torch.device('cuda:0' if torch.cuda.is_available() else 'cpu')
 
 
@@ -62,28 +63,40 @@ class LeafClassifier(nn.Module):
         return x
 
 
+def test(valid_dataset):
+    model.eval()
+    valid_dataloader = data.DataLoader(valid_dataset, batch_size=32, shuffle=True)
+
+    correct = 0
+    total = 0
+    for inputs, labels in valid_dataloader:
+        valid_input, valid_label = inputs.to(device), labels.to(device)
+        output = model(valid_input)
+        _, predicted = torch.max(output.data, 1)
+        total += valid_label.size(0)
+        correct += (predicted == valid_label).sum().item()
+
+    print('Test Acc: {:.2f}%'.format(100 * correct / total))
+
+
 def train(train_dataset):
 
-    # Split the dataset into training and validation sets
-    train_size = int(0.8 * len(train_dataset))
-    val_size = len(train_dataset) - train_size
-    train_dataset, val_dataset = data.random_split(train_dataset, [train_size, val_size])
-
-    # Define the data loaders for loading the training and validation sets in batches
+    # Define the data loader for loading the training set in batches
     train_dataloader = data.DataLoader(train_dataset, batch_size=32, shuffle=True)
-    val_dataloader = data.DataLoader(val_dataset, batch_size=32, shuffle=True)
 
     # Initialize the model and optimizer
-    model = LeafClassifier()
     optimizer = optim.Adam(model.parameters())
 
     # Define the loss function and the metric for evaluating the model
     loss_fn = nn.CrossEntropyLoss()
     metric = nn.Accuracy()
 
+    train_acc = 0.0
+    train_loss = 0.0
     num_epochs = 30
     # Train the model
     for epoch in range(num_epochs):
+        model.train()
         for inputs, labels in train_dataloader:
             # Move the input and label tensors to the correct device
             inputs = inputs.to(device)
@@ -102,6 +115,10 @@ def train(train_dataset):
             # Update the model parameters
             optimizer.step()
 
+            train_loss += loss.cpu().data.item() * inputs.size(0)
+            _, prediction = torch.max(outputs.data, 1)
+            train_acc += torch.sum(prediction == labels.data)
+
             # Compute the metric
             metric(outputs, labels)
 
@@ -113,9 +130,14 @@ def train(train_dataset):
 
 
 def main():
-    plants_dataset, diseases_dataset = load_data()
+    global model
+    plants_dataset, diseases_dataset = load_data('/Volumes/PortableSSD/dataset/plants/plants/train')
+    valid_plants_dataset, valid_disease_dataset = load_data('/Volumes/PortableSSD/dataset/plants/plants/valid')
+    model = LeafClassifier(len(plants_dataset))
     train(plants_dataset)
+    test(valid_plants_dataset)
     train(diseases_dataset)
+    test(diseases_dataset)
 
 
 main()
