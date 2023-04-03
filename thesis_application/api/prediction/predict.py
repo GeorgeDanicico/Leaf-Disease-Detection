@@ -1,3 +1,5 @@
+from typing import Any
+
 from fastapi import File
 from keras.models import load_model
 from keras.utils import img_to_array
@@ -25,13 +27,29 @@ def read_imagefile(data) -> Image.Image:
     print(image.size)
     return image
 
+def load_ml_model(type: str) -> Any:
+    if type == 'mtl':
+        return load_model('./ml_models/mtl.h5')
+    if type == 'simple_cnn':
+        return load_model('./ml_models/simple_plant.h5')
+    if type == 'inception':
+        return load_model('./ml_models/inception_plant.h5')
 
-def predict_classes(image: Image) -> list[str]:
-    model = load_model('./prediction/model.h5')
+
+def numpy_to_array(numpy_array) -> list[float]:
+    return_list: list[float] = []
+    for i in range(numpy_array.shape[1]):
+        return_list.append(numpy_array[0][i])
+
+    return return_list
+
+def predict_classes(model_type: str, image: Image) -> list[Any]:
+    model = load_ml_model(model_type)
     img_array = img_to_array(image)
     img_array = np.expand_dims(img_array, axis=0)  # Add batch dimension
 
     prediction1, prediction2 = model.predict(img_array)
+    print(numpy_to_array(prediction1))
     predicted_output1 = np.argmax(prediction1)
     predicted_output2 = np.argmax(prediction2)
     predicted_class_name1: str = list(plant_labels_dict.keys())[predicted_output1]
@@ -39,4 +57,4 @@ def predict_classes(image: Image) -> list[str]:
 
     print(f'The predicted output for image is: {predicted_class_name1} and {predicted_class_name2}')
 
-    return [predicted_class_name1, predicted_class_name2]
+    return [predicted_class_name1, numpy_to_array(prediction1), predicted_class_name2, numpy_to_array(prediction2)]

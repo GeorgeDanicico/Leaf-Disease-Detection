@@ -1,10 +1,14 @@
 import React, { useState } from 'react';
 import { Button, MenuItem, Select, SelectChangeEvent, Input } from '@mui/material';
 import "./App.css";
+import { ChartPrediction, Prediction, PredictionResponse } from './utils/types';
+import { Bar, BarChart, CartesianGrid, Legend, Tooltip, XAxis, YAxis } from 'recharts';
+import { DISEASES_LABELS, PLANT_LABELS } from './utils/helper';
 
 function App() {
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [selectedModel, setSelectedModel] = useState<string>("mtl")
+  const [predictionResponse, setPredictionResponse] = useState<PredictionResponse | null>(null)
 
   const handleFileInput = (e: React.ChangeEvent<HTMLInputElement>) => {
     setSelectedFile(e.target.files?.[0] ?? null);
@@ -14,11 +18,34 @@ function App() {
     setSelectedModel(e.target.value as string);
   }
 
+  const generateData = (prediction: PredictionResponse, type: string) => {
+
+    let scores: number[];
+    let labels: string[];
+    let data: ChartPrediction[] = [];
+    if (type === "class") {
+      scores = prediction.class_prediction.prediction_scores;
+      labels = PLANT_LABELS;
+    } else {
+      scores = prediction.disease_prediction.prediction_scores;
+      labels = DISEASES_LABELS;
+    }
+    
+    for (var i = 0; i < scores.length; i++) {
+      var obj: ChartPrediction = {name: labels[i],
+         value: scores[i]};
+      data.push(obj);
+    }
+
+    return data;
+  }
+
   const handleUpload = async () => {
     if (!selectedFile) return;
 
     const formData = new FormData();
     formData.append('file', selectedFile, selectedFile.name);
+    formData.append('type', selectedModel);
 
     const response = await fetch("http://localhost:8000/predict/", {
       method: "POST",
@@ -29,6 +56,7 @@ function App() {
     })
 
     console.log(response)
+    setPredictionResponse(response);
 
   }
 
@@ -64,6 +92,33 @@ function App() {
           <Button onClick={handleUpload}>Find</Button>
         </div>
 
+        <div className="content">
+          {predictionResponse !== null && (<div>
+            <p>Class: {predictionResponse.class_prediction.prediction}</p>
+            <p>Disease: {predictionResponse.disease_prediction.prediction}</p>
+
+            <div>
+              <BarChart
+                width={800}
+                height={300}
+                data={generateData(predictionResponse, "class")}
+                margin={{
+                  top: 5,
+                  right: 30,
+                  left: 20,
+                  bottom: 5,
+                }}
+              >
+                <CartesianGrid strokeDasharray="3 3" />
+                <XAxis dataKey="name" />
+                <YAxis />
+                <Tooltip />
+                <Bar dataKey="value" fill="#8884d8" />
+              </BarChart>
+            </div>
+
+          </div>)}
+        </div>
       </div>
     </div>
   );
