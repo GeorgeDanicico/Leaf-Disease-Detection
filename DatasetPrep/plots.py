@@ -1,5 +1,5 @@
 from cmath import exp
-
+import numpy as np
 import matplotlib.pyplot as plt
 import os
 # read stats from file
@@ -46,11 +46,16 @@ def tanh(x):
  return (exp(x) - exp(-x)) / (exp(x) + exp(-x))
 
 
+def softmax(x):
+    """Compute softmax values for each sets of scores in x."""
+    e_x = np.exp(x - np.max(x))
+    return e_x / e_x.sum()
+
 
 # define input data
 inputs = [x for x in range(-10, 10)]
 # calculate outputs
-outputs = [tanh(x) for x in inputs]
+outputs = softmax(inputs)
 # plot inputs vs outputs
 plt.plot(inputs, outputs)
 plt.show()

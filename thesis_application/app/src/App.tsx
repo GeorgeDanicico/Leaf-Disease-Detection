@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { Button, MenuItem, Select, SelectChangeEvent, Input } from '@mui/material';
 import "./App.css";
-import { ChartPrediction, Prediction, PredictionResponse } from './utils/types';
+import { ChartPrediction, PlantPrediction, DiseasePrediction, PredictionResponse } from './utils/types';
 import { Bar, BarChart, CartesianGrid, Legend, Tooltip, XAxis, YAxis } from 'recharts';
 import { DISEASES_LABELS, PLANT_LABELS } from './utils/helper';
 
@@ -28,7 +28,9 @@ function App() {
       labels = PLANT_LABELS;
     } else {
       scores = prediction.disease_prediction.prediction_scores;
-      labels = DISEASES_LABELS;
+      labels = []
+
+      prediction.disease_prediction.prediction_indices.forEach(index => labels.push(DISEASES_LABELS[index]));
     }
     
     for (var i = 0; i < scores.length; i++) {
@@ -77,8 +79,6 @@ function App() {
             <div>
               <p>Select a model</p>
               <Select
-                labelId="demo-simple-select-label"
-                id="demo-simple-select"
                 value={selectedModel}
                 onChange={handleModelChange}
               >
@@ -94,8 +94,8 @@ function App() {
 
         <div className="content">
           {predictionResponse !== null && (<div>
-            <p>Class: {predictionResponse.class_prediction.prediction}</p>
-            <p>Disease: {predictionResponse.disease_prediction.prediction}</p>
+            <p>Plant: {predictionResponse.class_prediction.prediction}</p>
+            <p>Disease Detected: {predictionResponse.disease_prediction.prediction}</p>
 
             <div>
               <BarChart
@@ -110,7 +110,27 @@ function App() {
                 }}
               >
                 <CartesianGrid strokeDasharray="3 3" />
-                <XAxis dataKey="name" />
+                <XAxis dataKey="name" fontSize={20}/>
+                <YAxis />
+                <Tooltip />
+                <Bar dataKey="value" fill="#8884d8" />
+              </BarChart>
+            </div>
+
+            <div>
+              <BarChart
+                width={800}
+                height={300}
+                data={generateData(predictionResponse, "disease")}
+                margin={{
+                  top: 5,
+                  right: 30,
+                  left: 20,
+                  bottom: 5,
+                }}
+              >
+                <CartesianGrid strokeDasharray="3 3" />
+                <XAxis dataKey="name" fontSize={20}/>
                 <YAxis />
                 <Tooltip />
                 <Bar dataKey="value" fill="#8884d8" />

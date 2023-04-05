@@ -43,17 +43,24 @@ def get_predictions(img_array, model_type: str):
     return plant_model.predict(img_array), disease_model.predict(img_array)
 
 
+def get_biggest_predictions(arr, nr: int):
+    prediction_indices = (-arr).argsort()[0][:nr]
+    return [i for i in prediction_indices]
+
+
 def predict_classes(model_type: str, image: Image) -> list[Any]:
     img_array = img_to_array(image)
     img_array = np.expand_dims(img_array, axis=0)  # Add batch dimension
 
     prediction1, prediction2 = get_predictions(img_array, model_type)
-
     predicted_output1 = np.argmax(prediction1)
     predicted_output2 = np.argmax(prediction2)
     predicted_class_name1: str = list(get_plant_labels_dict().keys())[predicted_output1]
     predicted_class_name2: str = list(get_diseases_labels_dict().keys())[predicted_output2]
 
-    print(f'The predicted output for image is: {predicted_class_name1} and {predicted_class_name2}')
+    prediction_indices = get_biggest_predictions(prediction2, 3)
+    prediction2_top_3 = [prediction2[0][i] for i in prediction_indices]
+    print(type(prediction_indices))
+    return [predicted_class_name1, numpy_to_array(prediction1), predicted_class_name2, prediction2_top_3,
+            prediction_indices]
 
-    return [predicted_class_name1, numpy_to_array(prediction1), predicted_class_name2, numpy_to_array(prediction2)]
