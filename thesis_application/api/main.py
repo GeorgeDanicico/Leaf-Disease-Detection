@@ -5,8 +5,7 @@ from fastapi.params import File
 from fastapi.encoders import jsonable_encoder
 from fastapi.responses import JSONResponse
 from fastapi.middleware.cors import CORSMiddleware
-from prediction.predict import predict_classes, read_image_file
-from pydantic import BaseModel
+from prediction.predict import PredictionService
 
 from utils.dto import PredictionResponse, PredictionDTO
 
@@ -21,7 +20,8 @@ app.add_middleware(
 @app.post("/predict/")
 async def predict_disease(type: Annotated[str, Form()], file: UploadFile = File(...)):
     image = await file.read()
-    pred = predict_classes('mtl', read_image_file(image))
+    prediction_service = PredictionService(type, image)
+    pred = prediction_service.predict_classes()
 
     print(f'Received type from fe: {type}')
     plant_prediction = PredictionDTO(prediction=pred[0], prediction_scores=pred[1])
