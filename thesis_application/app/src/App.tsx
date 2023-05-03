@@ -3,7 +3,6 @@ import { Button, MenuItem, Select, SelectChangeEvent, Input } from '@mui/materia
 import "./App.css";
 import { ChartPrediction, PredictionResponse, PredictionMap } from './utils/types';
 import { Bar, BarChart, CartesianGrid, Legend, Tooltip, XAxis, YAxis } from 'recharts';
-import { DISEASES_LABELS, PLANT_LABELS } from './utils/helper';
 
 function App() {
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
@@ -29,7 +28,6 @@ function App() {
       responseScores = prediction.class_prediction.prediction_scores;
     } else {
       responseScores = prediction.disease_prediction.prediction_scores;
-      // prediction.disease_prediction.prediction_indices.forEach(index => labels.push(DISEASES_LABELS[index]));
     }
 
     responseScores.forEach(prediction => {
