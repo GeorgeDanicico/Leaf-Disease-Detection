@@ -1,15 +1,16 @@
-export interface PlantPrediction {
-  prediction: string,
-  prediction_scores: number[],
+export interface PredictionMap {
+  name: string,
+  prediction: number,
 }
 
-export interface DiseasePrediction extends PlantPrediction {
-  prediction_indices: number[],
+export interface PredictionDTO {
+  prediction: string,
+  prediction_scores: PredictionMap[],
 }
 
 export interface PredictionResponse {
-  class_prediction: PlantPrediction,
-  disease_prediction: DiseasePrediction,
+  class_prediction: PredictionDTO,
+  disease_prediction: PredictionDTO,
 }
 
 export interface ChartPrediction {

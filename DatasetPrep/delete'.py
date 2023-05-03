@@ -55,24 +55,6 @@ for d in directories:
                     classes_photos.remove(photo)
                     print(f'Image {photo} deleted...')
 
-# print('--------------', v)
-# y = 0
-# for d in directories:
-#     for dir, _, _ in os.walk(os.path.join(classes_dir, d)):
-#         if len(dir) == 0:
-#             continue
-#
-#         for _, _, photos in os.walk(dir):
-#             # print(dir)
-#             for photo in photos:
-#                 if photo in diseases_photos:
-#                     continue
-#                 photo_path = os.path.join(dir, photo)
-#                 print(photo_path)
-#             # print(f'Photo {photo_path} removed.')
-#                 if photo_path.find('Corn') != -1:
-#                     os.remove(photo_path)
-#                     print(f'Removed {photo_path}')
 
 
 

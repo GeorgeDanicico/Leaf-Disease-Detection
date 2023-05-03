@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { Button, MenuItem, Select, SelectChangeEvent, Input } from '@mui/material';
 import "./App.css";
-import { ChartPrediction, PlantPrediction, DiseasePrediction, PredictionResponse } from './utils/types';
+import { ChartPrediction, PredictionResponse, PredictionMap } from './utils/types';
 import { Bar, BarChart, CartesianGrid, Legend, Tooltip, XAxis, YAxis } from 'recharts';
 import { DISEASES_LABELS, PLANT_LABELS } from './utils/helper';
 
@@ -20,18 +20,22 @@ function App() {
 
   const generateData = (prediction: PredictionResponse, type: string) => {
 
-    let scores: number[];
-    let labels: string[];
+    let scores: number[] = [];
+    let labels: string[] = [];
     let data: ChartPrediction[] = [];
-    if (type === "class") {
-      scores = prediction.class_prediction.prediction_scores;
-      labels = PLANT_LABELS;
-    } else {
-      scores = prediction.disease_prediction.prediction_scores;
-      labels = []
+    let responseScores = []
 
-      prediction.disease_prediction.prediction_indices.forEach(index => labels.push(DISEASES_LABELS[index]));
+    if (type === "class") {
+      responseScores = prediction.class_prediction.prediction_scores;
+    } else {
+      responseScores = prediction.disease_prediction.prediction_scores;
+      // prediction.disease_prediction.prediction_indices.forEach(index => labels.push(DISEASES_LABELS[index]));
     }
+
+    responseScores.forEach(prediction => {
+      labels.push(prediction.name)
+      scores.push(prediction.prediction)
+    })
     
     for (var i = 0; i < scores.length; i++) {
       var obj: ChartPrediction = {name: labels[i],
