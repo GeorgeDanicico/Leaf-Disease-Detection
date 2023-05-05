@@ -54,10 +54,12 @@ class PredictionService:
 
         return result
 
-    @staticmethod
-    def __format_prediction(numpy_array):
+    def __format_prediction(self, numpy_array):
         return_list: list[Prediction] = []
-        plant_labels = PredictionUtils.get_plant_labels()
+        if self.__model_type == 'mtl':
+            plant_labels = PredictionUtils.get_plant_labels_mtl()
+        else:
+            plant_labels = PredictionUtils.get_plant_labels()
 
         for i in range(numpy_array.shape[1]):
             return_list.append(Prediction(name=plant_labels[i], prediction=numpy_array[0][i]))
@@ -72,6 +74,8 @@ class PredictionService:
         predicted_class_name2: str = self.__get_predicted_disease(predicted_output2)
         prediction1_values = self.__format_prediction(prediction1)
         prediction2_top_3 = self.__get_biggest_predictions(prediction2, 3)
+
+        print(prediction1_values)
 
         return [predicted_class_name1, PredictionUtils.sort_predictions_by_name(prediction1_values),
                 predicted_class_name2, PredictionUtils.sort_predictions_by_name(prediction2_top_3)]
