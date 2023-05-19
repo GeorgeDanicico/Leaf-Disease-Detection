@@ -35,13 +35,9 @@ class PredictionService:
         return plant_model.predict(self.__image), disease_model.predict(self.__image)
 
     def __get_predicted_plant(self, predicted_output):
-        if self.__model_type == 'mtl':
-            return PredictionUtils.get_plant_labels_mtl()[predicted_output]
         return PredictionUtils.get_plant_labels()[predicted_output]
 
     def __get_predicted_disease(self, predicted_output):
-        if self.__model_type == 'mtl':
-            return PredictionUtils.get_diseases_labels_mtl()[predicted_output]
         return PredictionUtils.get_diseases_labels()[predicted_output]
 
     def __get_biggest_predictions(self, prediction, nr: int):
@@ -56,10 +52,7 @@ class PredictionService:
 
     def __format_prediction(self, numpy_array):
         return_list: list[Prediction] = []
-        if self.__model_type == 'mtl':
-            plant_labels = PredictionUtils.get_plant_labels_mtl()
-        else:
-            plant_labels = PredictionUtils.get_plant_labels()
+        plant_labels = PredictionUtils.get_plant_labels()
 
         for i in range(numpy_array.shape[1]):
             return_list.append(Prediction(name=plant_labels[i], prediction=numpy_array[0][i]))
