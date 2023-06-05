@@ -1,5 +1,9 @@
 from io import BytesIO
+
+import numpy as np
 from PIL import Image
+from keras.utils import img_to_array
+
 from utils.dto import Prediction
 
 
@@ -22,9 +26,7 @@ class PredictionUtils:
                 'Grape Black rot', 'Grape Esca (Black Measles)', 'Grape Leaf blight (Isariopsis Leaf Spot)',
                 'Grape healthy', 'Potato Early blight', 'Potato Late blight', 'Potato healthy',
                 'Strawberry Leaf scorch', 'Strawberry healthy', 'Tomato Bacterial spot',
-                'Tomato Early blight', 'Tomato Late blight', 'Tomato Leaf Mold',
-                'Tomato Septoria leaf spot', 'Tomato Spider',
-                'Tomato Target Spot', 'Tomato Yellow Leaf Curl Virus', 'Tomato mosaic virus',
+                'Tomato Early blight', 'Tomato Late blight',
                 'Tomato healthy']
 
     @staticmethod

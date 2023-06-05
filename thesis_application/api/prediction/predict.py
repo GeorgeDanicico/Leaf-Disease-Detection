@@ -21,10 +21,10 @@ class PredictionService:
     def __load_ml_models(self) -> Any:
         if self.__model_type == 'mtl':
             return load_model('./ml_models/mtl.h5')
-        if self.__model_type == 'simple_cnn':
-            return load_model('./ml_models/simple_plant.h5'), load_model('./ml_models/simple_disease.h5')
+        if self.__model_type == 'simple':
+            return load_model('./ml_models/simple_classes.h5'), load_model('./ml_models/simple_diseases.h5')
         if self.__model_type == 'inception':
-            return load_model('./ml_models/inception_plant.h5'), load_model('./ml_models/inception_disease.h5')
+            return load_model('./ml_models/inception_classes.h5'), load_model('./ml_models/inception_disease.h5')
 
     def __get_predictions(self):
         if self.__model_type == 'mtl':

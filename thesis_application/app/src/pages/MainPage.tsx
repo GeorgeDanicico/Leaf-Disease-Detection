@@ -60,7 +60,7 @@ function MainPage() {
                 onChange={handleModelChange}
               >
                 <MenuItem value="mtl">Multi-Task Learning</MenuItem>
-                <MenuItem value="simple">Simple CNN</MenuItem>
+                <MenuItem value="simple">Custom CNN</MenuItem>
                 <MenuItem value="inception">InceptionV3</MenuItem>
               </Select>
             </div>
